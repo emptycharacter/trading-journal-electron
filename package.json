@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Trading Journal App with Electron, React, and SQLite",
-  "main": "src/main/main.ts",
+  "main": "dist/main.js",  
   "scripts": {
-    "dev": "tsc && webpack serve --mode development",
+    "dev": "tsc && webpack serve --mode development --config webpack.config.cjs",
     "start": "tsc && electron .",
-    "build": "tsc && webpack --mode production && electron-builder",
+    "build": "tsc && webpack --mode production --config webpack.config.cjs && electron-builder",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write ."
   },
@@ -28,9 +28,7 @@
     "files": [
       "dist/**/*",
       "package.json",
-      "node_modules/**/*",
-      "src/main/**/*",
-      "src/renderer/**/*"
+      "node_modules/**/*"
     ],
     "win": {
       "target": "nsis"

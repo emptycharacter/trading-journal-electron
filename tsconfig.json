@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "dist",  
     "rootDir": "src",
-    "jsx": "react-jsx",  // ✅ Enables JSX support
+    "jsx": "react-jsx",
     "target": "ESNext",
     "module": "CommonJS",
     "moduleResolution": "Node",
     "strict": true,
-    "allowJs": true,
+    "allowJs": false,  // 🚀 Prevents JS files in src/
     "skipLibCheck": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

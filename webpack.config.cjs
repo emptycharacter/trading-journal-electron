@@ -16,6 +16,10 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
+        test: /\.(png|jpg|gif|svg)$/i,
+        type: "asset/resource",
+      },
+      {
         test: /\.css$/,
         use: ["style-loader", "css-loader"],
       },
@@ -27,7 +31,7 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        { from: "src/main/main.ts", to: "dist/main.ts" } // ✅ Copies main.ts
+        { from: "public", to: "dist/public" }, // ✅ Copy public assets
       ],
     }),
   ],

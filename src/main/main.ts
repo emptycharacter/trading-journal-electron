@@ -1,4 +1,5 @@
 import { app, BrowserWindow } from "electron";
+import path from "path";
 
 let mainWindow: BrowserWindow | null;
 
@@ -9,11 +10,11 @@ app.whenReady().then(() => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: "dist/preload.js",
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
-  mainWindow.loadURL("file://" + __dirname + "/index.html");
+  mainWindow.loadURL(`file://${path.join(__dirname, "../dist/index.html")}`);
 
   mainWindow.on("closed", () => {
     mainWindow = null;
