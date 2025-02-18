@@ -3,7 +3,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  entry: "./src/renderer/index.tsx",  // ✅ Ensure React app starts here
+  entry: "./src/renderer/index.tsx",
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.js",
@@ -31,11 +31,11 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "src/renderer/index.html",  // ✅ Ensure this exists
+      template: "src/renderer/index.html",
       filename: "index.html",
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: "public", to: "dist/public" }], // ✅ Ensure public assets are copied
+      patterns: [{ from: "public", to: "dist/public" }],
     }),
   ],
   devServer: {
@@ -44,7 +44,8 @@ module.exports = {
     },
     compress: true,
     port: 8080,
-    hot: true,
+    hot: true, // ✅ Enables Hot Module Replacement
+    liveReload: true,
     historyApiFallback: true,
   },
 };
