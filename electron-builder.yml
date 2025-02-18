@@ -1,0 +1,16 @@
+appId: com.tradingjournal.electron
+productName: TradingJournal
+directories:
+  output: dist
+files:
+  - "dist/**/*"
+  - "package.json"
+  - "node_modules/**/*"
+  - "src/main/**/*"
+  - "src/renderer/**/*"
+win:
+  target: nsis
+mac:
+  target: dmg
+linux:
+  target: AppImage

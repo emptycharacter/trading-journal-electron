@@ -1,62 +1,117 @@
 import { useState, useEffect } from "react";
+import TradeDetails from "./TradeDetails";
 
 type TradeData = {
-  date: string; // YYYY-MM-DD format
-  profitLoss: number; // Positive = Green, Negative = Red
+  date: string;
+  profitLoss: number;
+  symbol: string;
+  entryPrice: number;
+  exitPrice?: number;
+  strategy: string;
+  notes: string;
 };
 
 export default function TradeCalendar({ trades }: { trades: TradeData[] }) {
-  const [calendar, setCalendar] = useState<
-    { date: string; profitLoss?: number }[]
-  >([]);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [calendar, setCalendar] = useState<{ date: string; trades?: TradeData[] }[]>([]);
+  const [selectedTrades, setSelectedTrades] = useState<TradeData[] | null>(null);
 
   useEffect(() => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
+    generateCalendar();
+  }, [trades, currentMonth, currentYear]);
 
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+  function generateCalendar() {
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const newCalendar = Array.from({ length: daysInMonth }, (_, i) => {
-      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-        i + 1
-      ).padStart(2, "0")}`;
-      const trade = trades.find((t) => t.date === dateStr);
-      return {
-        date: dateStr,
-        profitLoss: trade ? trade.profitLoss : undefined,
-      };
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(i + 1).padStart(2, "0")}`;
+      const dayTrades = trades.filter((t) => t.date === dateStr);
+      return { date: dateStr, trades: dayTrades.length ? dayTrades : undefined };
     });
 
     setCalendar(newCalendar);
-  }, [trades]);
+  }
+
+  function handlePrevMonth() {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+  }
+
+  function handleNextMonth() {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+  }
+
+  function handleMonthChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const [year, month] = event.target.value.split("-").map(Number);
+    setCurrentYear(year);
+    setCurrentMonth(month);
+  }
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Trading Calendar</h2>
-      <div className="grid grid-cols-7 gap-2">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} className="text-center font-semibold">
-            {day}
-          </div>
-        ))}
-        {calendar.map(({ date, profitLoss }) => (
-          <div
-            key={date}
-            className={`p-2 text-center border rounded-lg ${
-              profitLoss !== undefined
-                ? profitLoss > 0
-                  ? "bg-green-400 text-white" // Green for profit
-                  : "bg-red-400 text-white" // Red for loss
-                : "bg-gray-200" // Neutral for no trades
-            }`}
-            title={
-              profitLoss !== undefined ? `P/L: $${profitLoss}` : "No trades"
-            }
-          >
-            {new Date(date).getDate()}
-          </div>
-        ))}
+      <div className="p-4 bg-white rounded-lg shadow-md">
+    {/* 🔥 EXTEND HERE: Responsive Month & Year Select */}
+    <div className="mb-4 flex flex-wrap gap-2 justify-between">
+      <button onClick={handlePrevMonth} className="px-3 py-1 bg-gray-300 rounded text-sm sm:text-base">
+        ← Prev
+      </button>
+
+      <div className="flex gap-2">
+        <select
+          value={`${currentYear}`}
+          onChange={(e) => setCurrentYear(Number(e.target.value))}
+          className="p-2 border rounded text-sm sm:text-base"
+        >
+          {Array.from({ length: 5 }, (_, i) => (
+            <option key={i} value={currentYear - i}>{currentYear - i}</option>
+          ))}
+        </select>
+
+        <select
+          value={`${currentYear}-${currentMonth}`}
+          onChange={handleMonthChange}
+          className="p-2 border rounded text-sm sm:text-base"
+        >
+          {Array.from({ length: 12 }, (_, i) => {
+            const month = new Date(currentYear, i).toLocaleString("default", { month: "long" });
+            return <option key={i} value={`${currentYear}-${i}`}>{month}</option>;
+          })}
+        </select>
       </div>
+
+      <button onClick={handleNextMonth} className="px-3 py-1 bg-gray-300 rounded text-sm sm:text-base">
+        Next →
+      </button>
     </div>
+
+    <div className="grid grid-cols-7 gap-2 text-xs sm:text-base">
+      {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        <div key={day} className="text-center font-semibold">{day}</div>
+      ))}
+      {calendar.map(({ date, trades }) => (
+        <div
+          key={date}
+          className={`p-1 sm:p-2 text-center border rounded-lg cursor-pointer ${
+            trades ? (trades.some(t => t.profitLoss > 0) ? "bg-green-400 text-white" : "bg-red-400 text-white") : "bg-gray-200"
+          }`}
+          title={trades ? `Trades: ${trades.length}` : "No trades"}
+          onClick={() => setSelectedTrades(trades || null)}
+        >
+          {new Date(date).getDate()}
+        </div>
+      ))}
+    </div>
+
+    {selectedTrades && <TradeDetails trades={selectedTrades} onClose={() => setSelectedTrades(null)} />}
+  </div>
+
   );
 }

@@ -1,18 +1,22 @@
 import { Line } from "react-chartjs-2";
 
-export default function PerformanceChart({ trades }: { trades: any[] }) {
-  const data = {
-    labels: trades.map((trade) => trade.date),
-    datasets: [
-      {
-        label: "Profit/Loss Over Time",
-        data: trades.map((trade) => trade.profitLoss || 0),
-        borderColor: "blue",
-        borderWidth: 2,
-        fill: false,
-      },
-    ],
+type ChartProps = {
+  data: {
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[];
+      borderColor: string;
+      backgroundColor: string;
+    }[];
   };
+};
 
-  return <Line data={data} />;
+export default function PerformanceChart({ data }: ChartProps) {
+  return (
+    <div className="p-4 bg-white shadow-md rounded-lg">
+      <h2 className="text-xl font-semibold mb-4">Performance Chart</h2>
+      <Line data={data} />
+    </div>
+  );
 }

@@ -15,7 +15,7 @@ export default function Journal() {
     <main className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-4">Trading Journal</h1>
 
-      {/* Trade Calendar */}
+      {/* Trading Calendar */}
       <TradeCalendar trades={trades} />
 
       {/* Trade List */}
@@ -27,15 +27,9 @@ export default function Journal() {
             {trades.map((trade, index) => (
               <li key={index} className="border-b py-2">
                 <p>
-                  <strong>{trade.symbol}</strong> - Entry: ${trade.entryPrice},
-                  Exit: {trade.exitPrice ? `$${trade.exitPrice}` : "Open"}, P/L:{" "}
-                  {trade.profitLoss !== null
-                    ? `$${trade.profitLoss}`
-                    : "Pending"}
+                  <strong>{trade.symbol}</strong> - Entry: ${trade.entryPrice}, Exit: {trade.exitPrice ? `$${trade.exitPrice}` : "Open"}, P/L: {trade.profitLoss !== null ? `$${trade.profitLoss}` : "Pending"}
                 </p>
-                <p className="text-sm text-gray-500">
-                  {trade.strategy} - {trade.notes}
-                </p>
+                <p className="text-sm text-gray-500">{trade.strategy} - {trade.notes}</p>
               </li>
             ))}
           </ul>
