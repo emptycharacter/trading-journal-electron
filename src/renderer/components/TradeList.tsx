@@ -1,38 +1,73 @@
 import { useEffect, useState } from "react";
 import TradeFilters from "./TradeFilters";
 
+type Trade = {
+  id: string;
+  userId: string;
+  symbol: string;
+  entryPrice: number;
+  exitPrice: number | null;
+  profitLoss: number | null;
+  date: string;
+  strategy: string;
+  notes: string;
+};
+
+type FilterOptions = {
+  symbol?: string;
+  sort?: "date-desc" | "date-asc" | "profit-desc" | "profit-asc";
+};
+
 export default function TradeList() {
-  const [trades, setTrades] = useState<any[]>([]);
-  const [filteredTrades, setFilteredTrades] = useState<any[]>([]);
+  const [trades, setTrades] = useState<Trade[]>([]);
+  const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
 
   useEffect(() => {
-    window.electron.send("get-trades");
-    window.electron.receive("get-trades", (data) => {
+    window.electron.ipcRenderer.send("get-trades");
+
+    const handleTrades = (_event: any, data: Trade[]) => {
       setTrades(data);
-      setFilteredTrades(data); // Default view = all trades
-    });
+      setFilteredTrades(data); // Default: show all trades
+    };
+
+    window.electron.ipcRenderer.on("get-trades", handleTrades);
+
+    return () => {
+      // ✅ Fix: Use `removeListener` correctly by passing the same function reference
+      window.electron.ipcRenderer.removeListener("get-trades", handleTrades);
+    };
   }, []);
 
-  function applyFilters(filters: any) {
-    let filtered = trades;
+  function applyFilters(filters: FilterOptions) {
+    let filtered = [...trades];
+
     if (filters.symbol) {
       filtered = filtered.filter((t) =>
-        t.symbol.toLowerCase().includes(filters.symbol.toLowerCase())
+        t.symbol.toLowerCase().includes(filters.symbol!.toLowerCase())
       );
     }
-    if (filters.sort === "date-desc") {
-      filtered.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-    } else if (filters.sort === "date-asc") {
-      filtered.sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
-    } else if (filters.sort === "profit-desc") {
-      filtered.sort((a, b) => (b.profitLoss || 0) - (a.profitLoss || 0));
-    } else if (filters.sort === "profit-asc") {
-      filtered.sort((a, b) => (a.profitLoss || 0) - (b.profitLoss || 0));
+
+    switch (filters.sort) {
+      case "date-desc":
+        filtered.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        break;
+      case "date-asc":
+        filtered.sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+        break;
+      case "profit-desc":
+        filtered.sort((a, b) => (b.profitLoss || 0) - (a.profitLoss || 0));
+        break;
+      case "profit-asc":
+        filtered.sort((a, b) => (a.profitLoss || 0) - (b.profitLoss || 0));
+        break;
+      default:
+        break;
     }
+
     setFilteredTrades(filtered);
   }
 
@@ -44,14 +79,12 @@ export default function TradeList() {
           <p>No trades found.</p>
         ) : (
           <ul>
-            {filteredTrades.map((trade, index) => (
-              <li key={index} className="border-b py-2">
+            {filteredTrades.map((trade) => (
+              <li key={trade.id} className="border-b py-2">
                 <p>
                   <strong>{trade.symbol}</strong> - Entry: ${trade.entryPrice},
                   Exit: {trade.exitPrice ? `$${trade.exitPrice}` : "Open"}, P/L:{" "}
-                  {trade.profitLoss !== null
-                    ? `$${trade.profitLoss}`
-                    : "Pending"}
+                  {trade.profitLoss !== null ? `$${trade.profitLoss}` : "Pending"}
                 </p>
                 <p className="text-sm text-gray-500">
                   {trade.strategy} - {trade.notes}

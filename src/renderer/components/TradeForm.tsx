@@ -11,7 +11,7 @@ export default function TradeForm() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    window.electron.send("add-trade", formData);
+    window.electron.ipcRenderer.send("add-trade", formData);
     setFormData({
       symbol: "",
       entryPrice: "",
