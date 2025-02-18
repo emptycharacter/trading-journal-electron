@@ -1,0 +1,28 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Electron & Webpack output
+dist/
+out/
+web-build/
+.webpack/
+.vite/
+
+# SQLite DB files
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# OS-specific
+.DS_Store
+Thumbs.db
