@@ -47,7 +47,8 @@
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.5"
+    "react-router-dom": "^7.1.5",
+    "recharts": "^2.15.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.3",
@@ -60,6 +61,7 @@
     "@types/react-chartjs-2": "^2.0.2",
     "@types/react-dom": "^19.0.4",
     "@types/react-router-dom": "^5.3.3",
+    "@types/recharts": "^1.8.29",
     "7zip-bin": "^5.2.0",
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",
